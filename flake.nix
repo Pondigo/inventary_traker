@@ -2,7 +2,7 @@
   description = "Phoenix Elixir development environment";
 
   inputs = {
-    nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
+    nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
     flake-utils.url = "github:numtide/flake-utils";
   };
 
@@ -10,11 +10,6 @@
     flake-utils.lib.eachDefaultSystem (system:
       let
         pkgs = nixpkgs.legacyPackages.${system};
-        
-        elixir = pkgs.beam.packages.erlang.elixir_1_17;
-        
-        # Node.js for Phoenix assets
-        nodejs = pkgs.nodejs_20;
       in
       {
         devShells.default = pkgs.mkShell {
@@ -23,33 +18,27 @@
             elixir
             erlang
             
-            # Phoenix dependencies
-            nodejs
+            # Phoenix dependencies  
+            nodejs_20
             nodePackages.npm
             
-            # Database (PostgreSQL is common for Phoenix)
+            # Database
             postgresql
             
             # Development tools
-            inotify-tools  # For file watching
             git
-            
-            # Optional: useful for debugging
-            htop
-            curl
+            fswatch
           ];
 
           shellHook = ''
             echo "Phoenix Elixir development environment loaded!"
-            echo "Elixir version: $(elixir --version | head -1)"
             echo "Node.js version: $(node --version)"
             echo ""
-            echo "To create a new Phoenix project:"
-            echo "  mix archive.install hex phx_new"
-            echo "  mix phx.new my_app"
-            echo ""
-            echo "To start PostgreSQL (if needed):"
-            echo "  pg_ctl -D \$PGDATA -l \$PGDATA/postgres.log start"
+            echo "To run this Phoenix project:"
+            echo "  mix deps.get        # Install dependencies"
+            echo "  mix ecto.create     # Create database"
+            echo "  mix ecto.migrate    # Run migrations"
+            echo "  mix phx.server      # Start Phoenix server"
             echo ""
           '';
 

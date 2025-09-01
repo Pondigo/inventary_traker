@@ -1,0 +1,22 @@
+{
+  "name": "inventory-tracker-email-worker",
+  "version": "1.0.0",
+  "description": "Cloudflare Worker for sending emails from Inventory Tracker Phoenix app",
+  "main": "email-sender.js",
+  "scripts": {
+    "deploy": "wrangler deploy",
+    "dev": "wrangler dev",
+    "test": "wrangler dev --test"
+  },
+  "keywords": [
+    "cloudflare-worker",
+    "email",
+    "phoenix",
+    "inventory-tracker"
+  ],
+  "author": "Inventory Tracker",
+  "license": "MIT",
+  "devDependencies": {
+    "wrangler": "^3.0.0"
+  }
+}

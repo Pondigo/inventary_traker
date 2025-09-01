@@ -1,0 +1,22 @@
+name = "inventory-tracker-email"
+main = "email-sender.js"
+compatibility_date = "2024-01-15"
+compatibility_flags = ["nodejs_compat"]
+
+# Worker will be deployed to pondi.app subdomain
+# URL will be: https://email.pondi.app
+route = { pattern = "email.pondi.app/*", zone_name = "pondi.app" }
+
+[env.production]
+name = "inventory-tracker-email-prod"
+
+[env.development]  
+name = "inventory-tracker-email-dev"
+
+# Environment variables (set these using wrangler secret put)
+# CLOUDFLARE_ACCOUNT_ID - Your Cloudflare account ID
+# CLOUDFLARE_API_TOKEN - API token with email permissions  
+# PHOENIX_API_KEY - Shared secret between Phoenix app and Worker
+
+# Example worker URL: https://email.pondi.app/send
+# Your Phoenix app will POST to this endpoint

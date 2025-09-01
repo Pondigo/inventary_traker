@@ -1,0 +1,81 @@
+<div class="bg-slate-50 font-sans text-slate-900 min-h-screen" style='font-family: Inter, "Noto Sans", sans-serif;'>
+  <div class="relative flex min-h-screen flex-col items-center justify-center overflow-hidden">
+    <div class="w-full max-w-md rounded-xl border border-slate-200 bg-white p-8 shadow-lg md:p-12">
+      <div class="mb-8 text-center">
+        <div class="mb-4 flex justify-center text-[#1173d4]">
+          <svg class="h-10 w-10" fill="none" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+            <path d="M44 4H30.6666V17.3334H17.3334V30.6666H4V44H44V4Z" fill="currentColor"></path>
+          </svg>
+        </div>
+        <h1 class="text-3xl font-bold tracking-tighter text-slate-800">
+          Create Your Account
+        </h1>
+        <p class="mt-2 text-slate-500">
+          Join Inventory Tracker to manage your inventory efficiently.
+        </p>
+      </div>
+
+      <.form :let={f} for={@changeset} action={~p"/users/register"} class="space-y-6">
+        <%= if @changeset.action do %>
+          <div class="rounded-md bg-red-50 p-4">
+            <p class="text-sm text-red-600">Oops, something went wrong! Please check the errors below.</p>
+          </div>
+        <% end %>
+
+        <div>
+          <label class="block text-sm font-medium text-slate-600" for={f[:email].id}>Email</label>
+          <div class="relative mt-2">
+            <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400">
+              mail
+            </span>
+            <.input
+              field={f[:email]}
+              type="email"
+              autocomplete="username"
+              required
+              phx-mounted={JS.focus()}
+              class="block w-full rounded-md border-slate-300 py-3 pl-10 pr-4 text-slate-900 placeholder-slate-400 shadow-sm focus:border-[#1173d4] focus:ring-[#1173d4]"
+              placeholder="e.g. johndoe@example.com"
+            />
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-sm font-medium text-slate-600" for={f[:password].id}>Password</label>
+          <div class="relative mt-2">
+            <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400">
+              lock
+            </span>
+            <.input
+              field={f[:password]}
+              type="password"
+              autocomplete="new-password"
+              class="block w-full rounded-md border-slate-300 py-3 pl-10 pr-4 text-slate-900 placeholder-slate-400 shadow-sm focus:border-[#1173d4] focus:ring-[#1173d4]"
+              placeholder="Create a secure password"
+            />
+          </div>
+        </div>
+
+        <div>
+          <.button 
+            type="submit"
+            phx-disable-with="Creating account..."
+            class="flex w-full justify-center rounded-md border border-transparent bg-[#1173d4] px-4 py-3 text-sm font-semibold text-white shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-[#1173d4] focus:ring-offset-2"
+          >
+            Create Account
+          </.button>
+        </div>
+      </.form>
+
+      <p class="mt-8 text-center text-sm text-slate-500">
+        Already have an account?
+        <.link 
+          navigate={~p"/users/log-in"} 
+          class="font-medium text-[#1173d4] hover:text-blue-700"
+        >
+          Sign in
+        </.link>
+      </p>
+    </div>
+  </div>
+</div>
