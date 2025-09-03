@@ -1,5 +1,5 @@
 /**
- * Cloudflare Worker for sending emails via Email Routing
+ * Cloudflare Worker for sending emails via Cloudflare Email API
  * This worker receives email requests from your Phoenix app and sends them using Cloudflare's Email API
  */
 
@@ -48,12 +48,12 @@ export default {
 };
 
 /**
- * Send email using Cloudflare's Email Routing API
+ * Send email using Cloudflare's Email API
  */
 async function sendEmail(emailData, env) {
   const { to, from, subject, content, reply_to } = emailData;
 
-  // Prepare email message
+  // Prepare email message for Cloudflare Email API
   const message = {
     personalizations: [
       {
@@ -86,9 +86,9 @@ async function sendEmail(emailData, env) {
     message.reply_to = formatAddress(reply_to);
   }
 
-  // Make API call to Cloudflare Email API
+  // Use correct Cloudflare Email API endpoint
   const response = await fetch(
-    `https://api.cloudflare.com/client/v4/accounts/${env.CLOUDFLARE_ACCOUNT_ID}/email/routing/addresses/send`,
+    `https://api.cloudflare.com/client/v4/accounts/${env.CLOUDFLARE_ACCOUNT_ID}/send/email`,
     {
       method: 'POST',
       headers: {

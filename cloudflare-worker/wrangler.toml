@@ -3,9 +3,9 @@ main = "email-sender.js"
 compatibility_date = "2024-01-15"
 compatibility_flags = ["nodejs_compat"]
 
-# Worker will be deployed to pondi.app subdomain
-# URL will be: https://email.pondi.app
-route = { pattern = "email.pondi.app/*", zone_name = "pondi.app" }
+# Worker will be deployed to default workers.dev domain
+# To use custom domain, add DNS record and uncomment route below:
+# route = { pattern = "email.pondi.app/*", zone_name = "pondi.app" }
 
 [env.production]
 name = "inventory-tracker-email-prod"
