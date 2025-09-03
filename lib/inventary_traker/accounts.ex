@@ -45,6 +45,46 @@ defmodule InventaryTraker.Accounts do
   end
 
   @doc """
+  Authenticates a user with email and password with proper error handling.
+
+  Returns `{:ok, user}` if authentication succeeds.
+  Returns `{:error, :no_password_set}` if user exists but has no password.
+  Returns `{:error, :invalid_credentials}` if email doesn't exist or password is wrong.
+
+  ## Examples
+
+      iex> authenticate_user("user@example.com", "correct_password")
+      {:ok, %User{}}
+
+      iex> authenticate_user("user@example.com", "wrong_password")
+      {:error, :invalid_credentials}
+
+      iex> authenticate_user("passwordless_user@example.com", "any_password")
+      {:error, :no_password_set}
+
+  """
+  def authenticate_user(email, password) when is_binary(email) and is_binary(password) do
+    case Repo.get_by(User, email: email) do
+      nil ->
+        # User doesn't exist - use timing-safe dummy check to prevent enumeration
+        User.valid_password?(nil, password)
+        {:error, :invalid_credentials}
+
+      %User{hashed_password: nil} = _user ->
+        # User exists but has no password set (uses magic link only)
+        {:error, :no_password_set}
+
+      %User{} = user ->
+        # User exists with password - check if it's valid
+        if User.valid_password?(user, password) do
+          {:ok, user}
+        else
+          {:error, :invalid_credentials}
+        end
+    end
+  end
+
+  @doc """
   Gets a single user.
 
   Raises `Ecto.NoResultsError` if the User does not exist.

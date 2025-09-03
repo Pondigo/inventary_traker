@@ -1,0 +1,90 @@
+%% Network Topology and Security Diagram
+graph TB
+    subgraph "Internet"
+        Users[End Users]
+        DNS[DNS Servers]
+    end
+    
+    subgraph "AWS Region (us-east-1)"
+        subgraph "Default VPC"
+            subgraph "Public Subnet"
+                subgraph "Security Group: inventory-tracker-sg"
+                    SG_Rules[Inbound Rules:<br/>SSH: 22 (0.0.0.0/0)<br/>HTTP: 80 (0.0.0.0/0)<br/>HTTPS: 443 (0.0.0.0/0)<br/>Phoenix: 4000 (0.0.0.0/0)<br/><br/>Outbound Rules:<br/>All Traffic (0.0.0.0/0)]
+                end
+                
+                subgraph "EC2 Instance (t2.micro)"
+                    subgraph "Operating System: Debian 13"
+                        subgraph "Network Services"
+                            SSH[SSH Server<br/>Port 22]
+                            Nginx[Nginx Reverse Proxy<br/>Port 80/443]
+                        end
+                        
+                        subgraph "Application Services"
+                            Phoenix[Phoenix Application<br/>localhost:4000]
+                            PG[PostgreSQL Database<br/>localhost:5432]
+                        end
+                        
+                        subgraph "System Services"
+                            SystemD[SystemD Services]
+                            NixDaemon[Nix Daemon]
+                        end
+                    end
+                    
+                    subgraph "Storage"
+                        EBS[EBS Volume<br/>8GB gp2<br/>Encrypted]
+                    end
+                end
+                
+                subgraph "Network Interfaces"
+                    ENI[Elastic Network Interface<br/>Private IP: 10.0.x.x<br/>Public IP: Dynamic]
+                end
+            end
+        end
+        
+        subgraph "AWS Services"
+            CloudWatch[CloudWatch Logs<br/>(Optional)]
+            S3[S3 Buckets<br/>(Backups)]
+        end
+    end
+    
+    %% Network Flow
+    Users --> DNS
+    DNS --> ENI
+    ENI --> SG_Rules
+    SG_Rules --> SSH
+    SG_Rules --> Nginx
+    
+    %% Internal Communication
+    Nginx --> Phoenix
+    Phoenix --> PG
+    SystemD --> Phoenix
+    SystemD --> PG
+    SystemD --> Nginx
+    
+    %% Storage
+    PG --> EBS
+    Phoenix --> EBS
+    
+    %% Monitoring (Optional)
+    SystemD -.-> CloudWatch
+    Phoenix -.-> CloudWatch
+    
+    %% Backup (Optional)
+    PG -.-> S3
+    
+    %% Styling
+    classDef internet fill:#ffebee
+    classDef aws fill:#e3f2fd
+    classDef security fill:#fff3e0
+    classDef compute fill:#e8f5e8
+    classDef storage fill:#f3e5f5
+    classDef network fill:#e0f2f1
+    classDef optional fill:#fafafa,stroke-dasharray: 5 5
+    
+    class Users,DNS internet
+    class AWS,VPC,PublicSubnet aws
+    class SG_Rules security
+    class EC2Instance,SSH,Nginx,Phoenix,PG,SystemD,NixDaemon compute
+    class EBS,S3 storage
+    class ENI network
+    class CloudWatch optional

@@ -32,19 +32,26 @@ defmodule InventaryTrakerWeb.UserSessionController do
     end
   end
 
-  # email + password login
-  def create(conn, %{"user" => %{"email" => email, "password" => password} = user_params}) do
-    if user = Accounts.get_user_by_email_and_password(email, password) do
-      conn
-      |> put_flash(:info, "Welcome back!")
-      |> UserAuth.log_in_user(user, user_params)
-    else
-      form = Phoenix.Component.to_form(user_params, as: "user")
+  # email + password login - let backend handle validation
+  def create(conn, %{"user" => %{"email" => email, "password" => password} = user_params}) when password != "" do
+    case Accounts.authenticate_user(email, password) do
+      {:ok, user} ->
+        conn
+        |> put_flash(:info, "Welcome back!")
+        |> UserAuth.log_in_user(user, user_params)
 
-      # In order to prevent user enumeration attacks, don't disclose whether the email is registered.
-      conn
-      |> put_flash(:error, "Invalid email or password")
-      |> render(:new, form: form)
+      {:error, :no_password_set} ->
+        form = Phoenix.Component.to_form(user_params, as: "user")
+        conn
+        |> put_flash(:error, "No password set for this account. We've sent you a magic link to log in.")
+        |> maybe_send_magic_link(email)
+        |> render(:new, form: form)
+
+      {:error, :invalid_credentials} ->
+        form = Phoenix.Component.to_form(user_params, as: "user")
+        conn
+        |> put_flash(:error, "Invalid email or password")
+        |> render(:new, form: form)
     end
   end
 
@@ -84,5 +91,16 @@ defmodule InventaryTrakerWeb.UserSessionController do
     conn
     |> put_flash(:info, "Logged out successfully.")
     |> UserAuth.log_out_user()
+  end
+
+  # Helper function to send magic link when password login fails
+  defp maybe_send_magic_link(conn, email) do
+    if user = Accounts.get_user_by_email(email) do
+      Accounts.deliver_login_instructions(
+        user,
+        &url(~p"/users/log-in/#{&1}")
+      )
+    end
+    conn
   end
 end

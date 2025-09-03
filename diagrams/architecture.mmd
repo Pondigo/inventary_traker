@@ -1,0 +1,62 @@
+%% Infrastructure Architecture Overview
+graph TB
+    subgraph "Development Environment"
+        Dev[Developer Machine]
+        Nix[Nix Development Shell]
+        Dev --> Nix
+    end
+    
+    subgraph "Infrastructure as Code"
+        TF[Terraform Configuration]
+        NixOS[NixOS Configuration] 
+        Nix --> TF
+        Nix --> NixOS
+    end
+    
+    subgraph "AWS Cloud"
+        subgraph "VPC"
+            SG[Security Groups<br/>SSH: 22<br/>HTTP: 80<br/>HTTPS: 443<br/>Phoenix: 4000]
+            
+            subgraph "EC2 Instance (t2.micro)"
+                Debian[Debian 13 AMI<br/>ami-0bb7d855677353076]
+                NixPkg[Nix Package Manager]
+                Debian --> NixPkg
+            end
+            
+            SG --> EC2Instance
+        end
+    end
+    
+    subgraph "Application Stack"
+        Nginx[Nginx Reverse Proxy<br/>Port 80/443]
+        Phoenix[Phoenix Application<br/>Port 4000]
+        PG[PostgreSQL Database<br/>Port 5432]
+        
+        Nginx --> Phoenix
+        Phoenix --> PG
+    end
+    
+    subgraph "External"
+        Internet[Internet Users]
+        DNS[DNS Resolution]
+    end
+    
+    %% Connections
+    TF --> AWS
+    NixOS --> EC2Instance
+    EC2Instance --> ApplicationStack
+    Internet --> DNS
+    DNS --> SG
+    
+    %% Styling
+    classDef devEnv fill:#e1f5fe
+    classDef infrastructure fill:#f3e5f5
+    classDef aws fill:#fff3e0
+    classDef app fill:#e8f5e8
+    classDef external fill:#fce4ec
+    
+    class Dev,Nix devEnv
+    class TF,NixOS infrastructure
+    class AWS,VPC,SG,EC2Instance,Debian,NixPkg aws
+    class Nginx,Phoenix,PG app
+    class Internet,DNS external

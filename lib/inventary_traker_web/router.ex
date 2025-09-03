@@ -17,6 +17,15 @@ defmodule InventaryTrakerWeb.Router do
     plug :accepts, ["json"]
   end
 
+  pipeline :skip_csrf_protection do
+    plug :accepts, ["html"]
+    plug :fetch_session
+    plug :fetch_live_flash
+    plug :put_root_layout, html: {InventaryTrakerWeb.Layouts, :root}
+    plug :put_secure_browser_headers
+    plug :fetch_current_scope_for_user
+  end
+
   scope "/", InventaryTrakerWeb do
     pipe_through :browser
 
@@ -64,7 +73,7 @@ defmodule InventaryTrakerWeb.Router do
   end
 
   scope "/", InventaryTrakerWeb do
-    pipe_through [:browser]
+    pipe_through [:browser, :skip_csrf_protection]
 
     get "/users/log-in", UserSessionController, :new
     get "/users/log-in/:token", UserSessionController, :confirm

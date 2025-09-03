@@ -1,0 +1,73 @@
+%% Deployment Workflow Sequence Diagram
+sequenceDiagram
+    participant Dev as Developer
+    participant Nix as Nix Shell
+    participant TF as Terraform
+    participant AWS as AWS API
+    participant EC2 as EC2 Instance
+    participant App as Phoenix App
+    participant DB as PostgreSQL
+    participant Nginx as Nginx Proxy
+    
+    Note over Dev,Nginx: Infrastructure Provisioning Phase
+    Dev->>Nix: nix develop
+    activate Nix
+    Note over Nix: Load development environment<br/>with Terraform, AWS CLI, etc.
+    
+    Dev->>TF: tf-deploy
+    activate TF
+    TF->>AWS: terraform init & plan
+    TF->>AWS: Create VPC, Security Groups
+    TF->>AWS: Launch EC2 t2.micro instance
+    TF->>EC2: Execute user_data.sh
+    activate EC2
+    
+    Note over EC2: System Initialization
+    EC2->>EC2: apt update & upgrade
+    EC2->>EC2: Install Nix package manager
+    EC2->>EC2: Create deploy user
+    EC2->>EC2: Setup SSH keys
+    
+    TF-->>Dev: Infrastructure ready ✅
+    deactivate TF
+    
+    Note over Dev,Nginx: Application Configuration Phase
+    Dev->>Nix: build-nixos
+    Nix->>Nix: Build NixOS configuration
+    Nix-->>Dev: Configuration built ✅
+    
+    Dev->>EC2: scp NixOS configuration
+    Dev->>EC2: nixos-rebuild switch
+    
+    Note over EC2: Service Startup Sequence
+    EC2->>DB: Start PostgreSQL service
+    activate DB
+    DB->>DB: Initialize inventory_tracker database
+    DB->>DB: Create inventory_user
+    DB-->>EC2: Database ready ✅
+    
+    EC2->>App: Start Phoenix application service
+    activate App
+    App->>DB: Connect to database
+    App->>App: Run migrations
+    App->>App: Compile assets
+    App->>App: Bind to port 4000
+    App-->>EC2: Phoenix ready ✅
+    
+    EC2->>Nginx: Start Nginx reverse proxy
+    activate Nginx
+    Nginx->>Nginx: Configure upstream to localhost:4000
+    Nginx->>Nginx: Bind to ports 80/443
+    Nginx-->>EC2: Nginx ready ✅
+    
+    Note over Dev,Nginx: Application Testing
+    EC2-->>AWS: Health check passed
+    AWS-->>Dev: Deployment complete ✅
+    
+    deactivate EC2
+    deactivate Nix
+    deactivate App
+    deactivate DB
+    deactivate Nginx
+    
+    Note over Dev,Nginx: Ready for Production Traffic

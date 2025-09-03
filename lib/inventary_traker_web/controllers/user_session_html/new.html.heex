@@ -1,3 +1,4 @@
+<!-- Login Page with Phoenix Layout -->
 <div class="bg-slate-50 font-sans text-slate-900 min-h-screen" style='font-family: Inter, "Noto Sans", sans-serif;'>
   <div class="relative flex min-h-screen flex-col items-center justify-center overflow-hidden">
     <div class="w-full max-w-md rounded-xl border border-slate-200 bg-white p-8 shadow-lg md:p-12">
@@ -23,7 +24,7 @@
         </div>
       <% end %>
 
-      <.form :let={f} for={@form} as={:user} action={~p"/users/log-in"} class="space-y-6">
+      <.form :let={f} for={@form} as={:user} action={~p"/users/log-in"} method="post" class="space-y-6">
         <div>
           <label class="block text-sm font-medium text-slate-600" for={f[:email].id}>Email</label>
           <div class="relative mt-2">
@@ -44,7 +45,10 @@
         </div>
 
         <div>
-          <label class="block text-sm font-medium text-slate-600" for={f[:password].id}>Password</label>
+          <label class="block text-sm font-medium text-slate-600" for={f[:password].id}>
+            Password 
+            <span class="text-xs text-slate-400 font-normal">(optional - leave blank for magic link)</span>
+          </label>
           <div class="relative mt-2">
             <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400">
               lock
@@ -54,7 +58,7 @@
               type="password"
               autocomplete="current-password"
               class="block w-full rounded-md border-slate-300 py-3 pl-10 pr-4 text-slate-900 placeholder-slate-400 shadow-sm focus:border-[#1173d4] focus:ring-[#1173d4]"
-              placeholder="Enter your password"
+              placeholder="Leave empty to receive magic link via email"
             />
           </div>
         </div>
@@ -78,7 +82,10 @@
             type="submit"
             class="flex w-full justify-center rounded-md border border-transparent bg-[#1173d4] px-4 py-3 text-sm font-semibold text-white shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-[#1173d4] focus:ring-offset-2"
           >
-            Log In
+            <span class="material-symbols-outlined mr-2">
+              login
+            </span>
+            Sign In
           </.button>
         </div>
       </.form>

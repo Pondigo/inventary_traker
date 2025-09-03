@@ -1,0 +1,117 @@
+%% Data Flow and Request Lifecycle
+graph TD
+    subgraph "Client Layer"
+        Browser[Web Browser]
+        Mobile[Mobile App]
+        API[API Client]
+    end
+    
+    subgraph "Internet"
+        CDN[CDN/Cache<br/>(Optional)]
+        LoadBalancer[Load Balancer<br/>(Optional)]
+    end
+    
+    subgraph "AWS Infrastructure"
+        subgraph "EC2 Instance"
+            subgraph "Nginx Layer"
+                NginxProxy[Nginx Reverse Proxy<br/>:80, :443]
+                NginxStatic[Static File Server<br/>CSS, JS, Images]
+            end
+            
+            subgraph "Phoenix Application Layer"
+                PhoenixRouter[Phoenix Router]
+                Controllers[Controllers]
+                LiveView[LiveView Components]
+                Channels[Phoenix Channels<br/>WebSockets]
+                
+                subgraph "Business Logic"
+                    Contexts[Application Contexts]
+                    Schemas[Ecto Schemas]
+                    Changesets[Ecto Changesets]
+                end
+                
+                subgraph "Data Access"
+                    EctoRepo[Ecto Repository]
+                    Migrations[Database Migrations]
+                end
+            end
+            
+            subgraph "Database Layer"
+                PostgreSQL[PostgreSQL Database]
+                InventoryDB[(inventory_tracker DB)]
+                
+                subgraph "Database Objects"
+                    Tables[Tables:<br/>• users<br/>• items<br/>• categories<br/>• inventory_logs]
+                    Indexes[Indexes & Constraints]
+                    Functions[Stored Procedures<br/>(Optional)]
+                end
+            end
+        end
+    end
+    
+    subgraph "External Services"
+        Email[Email Service<br/>Cloudflare Workers]
+        Storage[File Storage<br/>S3 (Optional)]
+        Monitoring[Monitoring<br/>CloudWatch]
+    end
+    
+    %% Request Flow - HTTP
+    Browser --> CDN
+    Mobile --> CDN
+    API --> CDN
+    CDN --> LoadBalancer
+    LoadBalancer --> NginxProxy
+    
+    %% Nginx Routing
+    NginxProxy --> NginxStatic
+    NginxProxy --> PhoenixRouter
+    
+    %% Phoenix Request Handling
+    PhoenixRouter --> Controllers
+    PhoenixRouter --> LiveView
+    PhoenixRouter --> Channels
+    
+    Controllers --> Contexts
+    LiveView --> Contexts
+    Channels --> Contexts
+    
+    %% Data Layer Access
+    Contexts --> Schemas
+    Schemas --> Changesets
+    Changesets --> EctoRepo
+    EctoRepo --> PostgreSQL
+    PostgreSQL --> InventoryDB
+    InventoryDB --> Tables
+    Tables --> Indexes
+    
+    %% External Integrations
+    Contexts --> Email
+    Contexts --> Storage
+    PhoenixRouter --> Monitoring
+    
+    %% Database Management
+    Migrations --> PostgreSQL
+    Functions --> PostgreSQL
+    
+    %% WebSocket Flow (Real-time updates)
+    Channels -.->|Real-time| Browser
+    Channels -.->|Real-time| Mobile
+    
+    %% Response Flow (implicit reverse)
+    Tables -.->|Response| Browser
+    
+    %% Styling
+    classDef client fill:#e3f2fd
+    classDef internet fill:#fff3e0  
+    classDef proxy fill:#e8f5e8
+    classDef app fill:#f3e5f5
+    classDef data fill:#e0f2f1
+    classDef external fill:#ffebee
+    classDef realtime fill:#e1f5fe,stroke:#0277bd,stroke-width:2px
+    
+    class Browser,Mobile,API client
+    class CDN,LoadBalancer internet
+    class NginxProxy,NginxStatic proxy
+    class PhoenixRouter,Controllers,LiveView,Channels,Contexts,Schemas,Changesets app
+    class EctoRepo,Migrations,PostgreSQL,InventoryDB,Tables,Indexes,Functions data
+    class Email,Storage,Monitoring external
