@@ -30,7 +30,7 @@ defmodule InventaryTrakerWeb.UserRegistrationControllerTest do
         })
 
       refute get_session(conn, :user_token)
-      assert redirected_to(conn) == ~p"/users/log-in"
+      assert redirected_to(conn) == ~p"/welcome"
 
       assert conn.assigns.flash["info"] =~
                ~r/An email was sent to .*, please access it to confirm your account/
