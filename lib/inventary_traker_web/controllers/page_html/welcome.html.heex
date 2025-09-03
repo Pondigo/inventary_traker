@@ -1,0 +1,91 @@
+<!-- Welcome Page - Post Registration -->
+<section class="bg-white">
+  <div class="container mx-auto px-6 py-24 text-center">
+    <div class="flex items-center justify-center mb-8">
+      <div class="flex items-center justify-center h-20 w-20 rounded-full bg-green-100 text-green-600">
+        <span class="material-symbols-outlined text-4xl">
+          check_circle
+        </span>
+      </div>
+    </div>
+    
+    <h1 class="text-4xl md:text-5xl font-extrabold tracking-tighter text-slate-900 leading-tight">
+      Welcome to Inventory Tracker!
+    </h1>
+    
+    <p class="mt-6 max-w-2xl mx-auto text-lg text-slate-500">
+      Your account has been created successfully. We've sent you an email with login instructions. 
+      Check your inbox and click the link to verify your account and start managing your inventory.
+    </p>
+    
+    <div class="mt-8 space-y-4">
+      <div class="bg-blue-50 border border-blue-200 rounded-lg p-6 max-w-lg mx-auto">
+        <div class="flex items-center">
+          <span class="material-symbols-outlined text-[#1173d4] mr-3">
+            mail
+          </span>
+          <div class="text-left">
+            <h3 class="text-sm font-semibold text-slate-800">Check Your Email</h3>
+            <p class="text-sm text-slate-600">We've sent you a secure login link to verify your account.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="mt-12 flex justify-center gap-4">
+      <.link 
+        navigate={~p"/users/log-in"}
+        class="rounded-md bg-[#1173d4] px-8 py-4 text-lg font-semibold text-white shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-[#1173d4] focus:ring-offset-2"
+      >
+        Go to Login
+      </.link>
+      <.link 
+        navigate={~p"/"}
+        class="rounded-md border border-slate-300 bg-white px-8 py-4 text-lg font-semibold text-slate-700 shadow-sm hover:bg-slate-100"
+      >
+        Back to Home
+      </.link>
+    </div>
+  </div>
+</section>
+
+<section class="bg-slate-50 py-16">
+  <div class="container mx-auto px-6">
+    <div class="text-center mb-8">
+      <h2 class="text-2xl font-bold tracking-tight text-slate-800">What's Next?</h2>
+      <p class="mt-4 text-slate-500">Here's what you can do once your account is verified:</p>
+    </div>
+    
+    <div class="grid md:grid-cols-3 gap-6 max-w-4xl mx-auto">
+      <div class="bg-white p-6 rounded-lg shadow-sm text-center">
+        <div class="flex items-center justify-center h-12 w-12 rounded-full bg-blue-100 text-[#1173d4] mx-auto">
+          <span class="material-symbols-outlined">
+            add_box
+          </span>
+        </div>
+        <h3 class="mt-4 text-lg font-semibold text-slate-800">Add Your First Product</h3>
+        <p class="mt-2 text-sm text-slate-500">Start by adding products to your inventory system.</p>
+      </div>
+      
+      <div class="bg-white p-6 rounded-lg shadow-sm text-center">
+        <div class="flex items-center justify-center h-12 w-12 rounded-full bg-blue-100 text-[#1173d4] mx-auto">
+          <span class="material-symbols-outlined">
+            store
+          </span>
+        </div>
+        <h3 class="mt-4 text-lg font-semibold text-slate-800">Set Up Locations</h3>
+        <p class="mt-2 text-sm text-slate-500">Configure your warehouses and storage locations.</p>
+      </div>
+      
+      <div class="bg-white p-6 rounded-lg shadow-sm text-center">
+        <div class="flex items-center justify-center h-12 w-12 rounded-full bg-blue-100 text-[#1173d4] mx-auto">
+          <span class="material-symbols-outlined">
+            group
+          </span>
+        </div>
+        <h3 class="mt-4 text-lg font-semibold text-slate-800">Invite Your Team</h3>
+        <p class="mt-2 text-sm text-slate-500">Add team members to collaborate on inventory management.</p>
+      </div>
+    </div>
+  </div>
+</section>

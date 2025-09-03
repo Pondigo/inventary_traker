@@ -84,5 +84,20 @@ config :phoenix_live_view,
   # Enable helpful, but potentially expensive runtime checks
   enable_expensive_runtime_checks: true
 
-# Disable swoosh api client as it is only required for production adapters.
-config :swoosh, :api_client, false
+# Configure mailer for development
+# Use environment variable USE_CLOUDFLARE_EMAIL to switch between adapters:
+# - true: Send real emails via Cloudflare Workers
+# - false: Store emails locally at /dev/mailbox (default)
+if System.get_env("USE_CLOUDFLARE_EMAIL") in ~w(true 1) do
+  config :inventary_traker, InventaryTraker.Mailer,
+    adapter: InventaryTraker.Mailer.CloudflareAdapter,
+    api_key: System.get_env("CLOUDFLARE_WORKER_API_KEY"),
+    worker_url: System.get_env("CLOUDFLARE_WORKER_URL") || "https://email.pondi.app/send"
+
+  # Configure HTTP client for API requests
+  config :swoosh, :api_client, Swoosh.ApiClient.Finch
+else
+  # Use local adapter - emails viewable at /dev/mailbox
+  config :inventary_traker, InventaryTraker.Mailer, adapter: Swoosh.Adapters.Local
+  config :swoosh, :api_client, false
+end

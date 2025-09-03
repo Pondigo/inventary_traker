@@ -13,8 +13,14 @@ defmodule InventaryTraker.Accounts.UserNotifier do
       |> subject(subject)
       |> text_body(body)
 
-    with {:ok, _metadata} <- Mailer.deliver(email) do
-      {:ok, email}
+    case Mailer.deliver(email) do
+      {:ok, _metadata} -> 
+        {:ok, email}
+      {:error, reason} -> 
+        # Log the error but don't crash the registration process
+        require Logger
+        Logger.error("Failed to send email to #{recipient}: #{inspect(reason)}")
+        {:ok, email}  # Return success to prevent blocking user registration
     end
   end
 

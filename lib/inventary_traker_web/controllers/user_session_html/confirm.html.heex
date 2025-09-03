@@ -1,59 +1,160 @@
-<Layouts.app flash={@flash} current_scope={@current_scope}>
-  <div class="mx-auto max-w-sm">
+<!-- Login Confirmation Page -->
+<div class="min-h-screen bg-white flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+  <div class="max-w-md w-full space-y-8">
+    <!-- Header -->
     <div class="text-center">
-      <.header>Welcome {@user.email}</.header>
+      <div class="flex items-center justify-center mb-6">
+        <div class="flex items-center justify-center h-16 w-16 rounded-full bg-green-100 text-green-600">
+          <span class="material-symbols-outlined text-2xl">
+            verified_user
+          </span>
+        </div>
+      </div>
+      <h2 class="text-3xl font-bold text-slate-800">
+        Welcome to Inventory Tracker!
+      </h2>
+      <p class="mt-2 text-sm text-slate-600">
+        Hi <span class="font-medium text-slate-800"><%= @user.email %></span>
+      </p>
     </div>
 
-    <.form
-      :if={!@user.confirmed_at}
-      for={@form}
-      id="confirmation_form"
-      action={~p"/users/log-in?_action=confirmed"}
-      phx-mounted={JS.focus_first()}
-    >
-      <input type="hidden" name={@form[:token].name} value={@form[:token].value} />
-      <.button
-        name={@form[:remember_me].name}
-        value="true"
-        phx-disable-with="Confirming..."
-        class="btn btn-primary w-full"
-      >
-        Confirm and stay logged in
-      </.button>
-      <.button phx-disable-with="Confirming..." class="btn btn-primary btn-soft w-full mt-2">
-        Confirm and log in only this time
-      </.button>
-    </.form>
+    <!-- Account Confirmation -->
+    <div :if={!@user.confirmed_at} class="bg-blue-50 border border-blue-200 rounded-lg p-6">
+      <div class="flex items-center mb-4">
+        <span class="material-symbols-outlined text-[#1173d4] mr-3">
+          mark_email_read
+        </span>
+        <div>
+          <h3 class="text-sm font-semibold text-slate-800">Account Confirmation</h3>
+          <p class="text-sm text-slate-600">Choose how you'd like to proceed with your account.</p>
+        </div>
+      </div>
 
-    <.form
-      :if={@user.confirmed_at}
-      for={@form}
-      id="login_form"
-      action={~p"/users/log-in"}
-      phx-mounted={JS.focus_first()}
-    >
-      <input type="hidden" name={@form[:token].name} value={@form[:token].value} />
-      <%= if @current_scope do %>
-        <.button variant="primary" phx-disable-with="Logging in..." class="btn btn-primary w-full">
-          Log in
-        </.button>
-      <% else %>
-        <.button
+      <.form
+        for={@form}
+        id="confirmation_form"
+        action={~p"/users/log-in?_action=confirmed"}
+        phx-mounted={JS.focus_first()}
+        class="space-y-3"
+      >
+        <input type="hidden" name={@form[:token].name} value={@form[:token].value} />
+        
+        <button
+          type="submit"
           name={@form[:remember_me].name}
           value="true"
-          phx-disable-with="Logging in..."
-          class="btn btn-primary w-full"
+          phx-disable-with="Confirming..."
+          class="w-full flex justify-center py-3 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-[#1173d4] hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#1173d4] transition-colors"
         >
-          Keep me logged in on this device
-        </.button>
-        <.button phx-disable-with="Logging in..." class="btn btn-primary btn-soft w-full mt-2">
-          Log me in only this time
-        </.button>
-      <% end %>
-    </.form>
+          <span class="material-symbols-outlined mr-2 text-sm">
+            login
+          </span>
+          Confirm and stay logged in
+        </button>
+        
+        <button
+          type="submit"
+          phx-disable-with="Confirming..."
+          class="w-full flex justify-center py-3 px-4 border border-slate-300 rounded-md shadow-sm bg-white text-sm font-medium text-slate-700 hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#1173d4] transition-colors"
+        >
+          <span class="material-symbols-outlined mr-2 text-sm">
+            schedule
+          </span>
+          Confirm and log in only this time
+        </button>
+      </.form>
+    </div>
 
-    <p :if={!@user.confirmed_at} class="alert alert-outline mt-8">
-      Tip: If you prefer passwords, you can enable them in the user settings.
-    </p>
+    <!-- Already Confirmed -->
+    <div :if={@user.confirmed_at} class="bg-green-50 border border-green-200 rounded-lg p-6">
+      <div class="flex items-center mb-4">
+        <span class="material-symbols-outlined text-green-600 mr-3">
+          check_circle
+        </span>
+        <div>
+          <h3 class="text-sm font-semibold text-slate-800">Account Verified</h3>
+          <p class="text-sm text-slate-600">Your account is already confirmed. Choose your login preference.</p>
+        </div>
+      </div>
+
+      <.form
+        for={@form}
+        id="login_form"
+        action={~p"/users/log-in"}
+        phx-mounted={JS.focus_first()}
+        class="space-y-3"
+      >
+        <input type="hidden" name={@form[:token].name} value={@form[:token].value} />
+        
+        <%= if @current_scope do %>
+          <button
+            type="submit"
+            phx-disable-with="Logging in..."
+            class="w-full flex justify-center py-3 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-[#1173d4] hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#1173d4] transition-colors"
+          >
+            <span class="material-symbols-outlined mr-2 text-sm">
+              login
+            </span>
+            Log in
+          </button>
+        <% else %>
+          <button
+            type="submit"
+            name={@form[:remember_me].name}
+            value="true"
+            phx-disable-with="Logging in..."
+            class="w-full flex justify-center py-3 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-[#1173d4] hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#1173d4] transition-colors"
+          >
+            <span class="material-symbols-outlined mr-2 text-sm">
+              login
+            </span>
+            Keep me logged in on this device
+          </button>
+          
+          <button
+            type="submit"
+            phx-disable-with="Logging in..."
+            class="w-full flex justify-center py-3 px-4 border border-slate-300 rounded-md shadow-sm bg-white text-sm font-medium text-slate-700 hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#1173d4] transition-colors"
+          >
+            <span class="material-symbols-outlined mr-2 text-sm">
+              schedule
+            </span>
+            Log me in only this time
+          </button>
+        <% end %>
+      </.form>
+    </div>
+
+    <!-- Help Text -->
+    <div class="text-center">
+      <p class="text-xs text-slate-500">
+        <span class="material-symbols-outlined text-xs mr-1">
+          info
+        </span>
+        You can enable password login later in user settings if preferred.
+      </p>
+    </div>
+
+    <!-- Navigation Links -->
+    <div class="flex justify-center space-x-6 text-sm">
+      <.link 
+        navigate={~p"/"} 
+        class="text-[#1173d4] hover:text-blue-700 font-medium flex items-center"
+      >
+        <span class="material-symbols-outlined text-sm mr-1">
+          home
+        </span>
+        Back to Home
+      </.link>
+      <.link 
+        navigate={~p"/users/log-in"} 
+        class="text-slate-500 hover:text-slate-700 font-medium flex items-center"
+      >
+        <span class="material-symbols-outlined text-sm mr-1">
+          alternate_email
+        </span>
+        Different Email
+      </.link>
+    </div>
   </div>
-</Layouts.app>
+</div>

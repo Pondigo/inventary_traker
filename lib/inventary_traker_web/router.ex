@@ -21,6 +21,7 @@ defmodule InventaryTrakerWeb.Router do
     pipe_through :browser
 
     get "/", PageController, :home
+    get "/welcome", PageController, :welcome
   end
 
   # Other scopes may use custom stacks.

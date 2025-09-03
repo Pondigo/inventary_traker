@@ -23,7 +23,7 @@ defmodule InventaryTrakerWeb.UserRegistrationController do
           :info,
           "An email was sent to #{user.email}, please access it to confirm your account."
         )
-        |> redirect(to: ~p"/users/log-in")
+        |> redirect(to: ~p"/welcome")
 
       {:error, %Ecto.Changeset{} = changeset} ->
         render(conn, :new, changeset: changeset)

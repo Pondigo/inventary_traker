@@ -4,4 +4,8 @@ defmodule InventaryTrakerWeb.PageController do
   def home(conn, _params) do
     render(conn, :home)
   end
+
+  def welcome(conn, _params) do
+    render(conn, :welcome)
+  end
 end
